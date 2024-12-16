@@ -25,7 +25,7 @@ WORKDIR /app
 COPY --from=build /app/target/myapp-1.0-SNAPSHOT.jar myapp.jar
 
 # Шаг 6: Копируем файл .env для запуска
-COPY .env /app/
+#COPY .env /app/
 
 # Шаг 7: Открываем порт (если требуется)
 EXPOSE 8080
