@@ -9,7 +9,7 @@ COPY pom.xml /app/
 COPY src /app/src
 
 # Копируем файл .env
-COPY .env /app/
+#COPY .env /app/
 
 # Шаг 3: Устанавливаем Maven, скачиваем зависимости и собираем проект
 RUN apt-get update && apt-get install -y maven && apt-get clean
