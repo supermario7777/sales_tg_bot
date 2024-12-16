@@ -1,5 +1,7 @@
 package com.example.myapp;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -9,29 +11,29 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
+import io.github.cdimascio.dotenv.Dotenv;
 
-import java.io.FileReader;
-import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 public class MyTelegramBot extends TelegramLongPollingBot {
 
+    private static final Logger logger = LoggerFactory.getLogger(MyTelegramBot.class);
     private static String botUsername;
     private static String botToken;
 
     static {
         // Загрузка переменных из .env файла
-        Properties properties = new Properties();
-        try (FileReader reader = new FileReader(".env")) {
-            properties.load(reader);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Dotenv dotenv = Dotenv.load();
+        botUsername = dotenv.get("BOT_USERNAME");
+        botToken = dotenv.get("BOT_TOKEN");
 
-        botUsername = properties.getProperty("BOT_USERNAME");
-        botToken = properties.getProperty("BOT_TOKEN");
+        if (botUsername == null || botToken == null) {
+            logger.error("BOT_USERNAME или BOT_TOKEN не найдены в .env файле!");
+        } else {
+            logger.info("Переменные окружения загружены успешно.");
+        }
     }
 
     @Override
@@ -98,7 +100,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         try {
             execute(message);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            logger.error("Ошибка при отправке сообщения с кнопками", e);
         }
     }
 
@@ -131,7 +133,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
         try {
             execute(message);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            logger.error("Ошибка при отправке сообщения", e);
         }
     }
 
@@ -150,7 +152,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
             botsApi.registerBot(new MyTelegramBot());
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            logger.error("Ошибка при запуске бота", e);
         }
     }
 }
