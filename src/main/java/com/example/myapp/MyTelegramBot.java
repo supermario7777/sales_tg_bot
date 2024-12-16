@@ -11,7 +11,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-import io.github.cdimascio.dotenv.Dotenv;
+//import io.github.cdimascio.dotenv.Dotenv;
 
 
 import java.util.ArrayList;
@@ -25,9 +25,12 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
     static {
         // Загрузка переменных из .env файла
-        Dotenv dotenv = Dotenv.load();
-        botUsername = dotenv.get("BOT_USERNAME");
-        botToken = dotenv.get("BOT_TOKEN");
+//        Dotenv dotenv = Dotenv.load();
+//        botUsername = dotenv.get("BOT_USERNAME");
+//        botToken = dotenv.get("BOT_TOKEN");
+
+        botUsername="thisisforexample_bot";
+        botToken="7821010099:AAFhSE8jbg_4S56Qldr3mffw_rP-t2ecSIE";
 
         if (botUsername == null || botToken == null) {
             logger.error("BOT_USERNAME или BOT_TOKEN не найдены в .env файле!");
