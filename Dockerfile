@@ -8,9 +8,6 @@ WORKDIR /app
 COPY pom.xml /app/
 COPY src /app/src
 
-# Копируем файл .env
-#COPY .env /app/
-
 # Шаг 3: Устанавливаем Maven, скачиваем зависимости и собираем проект
 RUN apt-get update && apt-get install -y maven && apt-get clean
 RUN mvn clean package -X
@@ -22,10 +19,10 @@ FROM eclipse-temurin:17-jre
 WORKDIR /app
 
 # Шаг 5: Копируем собранный JAR-файл из предыдущего этапа
-COPY --from=build /app/target/myapp-1.0-SNAPSHOT.jar myapp.jar
+COPY --from=build /app/target/myapp-1.0-SNAPSHOT.jar /app/myapp.jar
 
-# Шаг 6: Копируем файл .env для запуска
-#COPY .env /app/
+# Шаг 6: Копируем ресурсы (если есть необходимость)
+COPY src/main/resources /app/resources
 
 # Шаг 7: Открываем порт (если требуется)
 EXPOSE 8080

@@ -13,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,16 +62,16 @@ public class MyTelegramBot extends TelegramLongPollingBot {
                     sendSubcategories(chatId, "catalog_electronics");
                     break;
                 case "subcategory_tools":
-                    sendPdfFile(chatId, "src/main/resources/files/dentistry_tools.pdf");
+                    sendPdfFile(chatId, "files/dentistry_tools.pdf");
                     break;
                 case "subcategory_meds":
-                    sendPdfFile(chatId, "src/main/resources/files/dentistry_meds.pdf");
+                    sendPdfFile(chatId, "files/dentistry_meds.pdf");
                     break;
                 case "subcategory_tv":
-                    sendPdfFile(chatId, "src/main/resources/files/electronics_tv.pdf");
+                    sendPdfFile(chatId, "files/electronics_tv.pdf");
                     break;
                 case "subcategory_audio":
-                    sendPdfFile(chatId, "src/main/resources/files/electronics_audio.pdf");
+                    sendPdfFile(chatId, "files/electronics_audio.pdf");
                     break;
                 default:
                     logger.warn("Необработанное действие: " + callbackData);
@@ -195,8 +196,12 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
     private void sendPdfFile(long chatId, String filePath) {
         try {
-            java.io.File file = new java.io.File(filePath);
-            InputFile inputFile = new InputFile(file);
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filePath);
+            if (inputStream == null) {
+                logger.error("Файл не найден: " + filePath);
+                return;
+            }
+            InputFile inputFile = new InputFile(inputStream, filePath.substring(filePath.lastIndexOf("/") + 1));
 
             org.telegram.telegrambots.meta.api.methods.send.SendDocument sendDocument = new org.telegram.telegrambots.meta.api.methods.send.SendDocument();
             sendDocument.setChatId(String.valueOf(chatId));
