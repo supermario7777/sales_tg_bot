@@ -29,8 +29,6 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 //        botUsername = dotenv.get("BOT_USERNAME");
 //        botToken = dotenv.get("BOT_TOKEN");
 
-//        botUsername="thisisforexample_bot";
-//        botToken="7821010099:AAFhSE8jbg_4S56Qldr3mffw_rP-t2ecSIE";
 
         botUsername = System.getenv("BOT_USERNAME");
         botToken = System.getenv("BOT_TOKEN");
