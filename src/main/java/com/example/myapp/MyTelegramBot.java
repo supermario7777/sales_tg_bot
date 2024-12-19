@@ -35,25 +35,40 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+        // Обрабатываем сообщения
         if (update.hasMessage()) {
             Message message = update.getMessage();
 
-            // Проверка: сообщение из группы или канала
+            // Проверяем, из какого чата пришло сообщение
             if (message.getChat().isGroupChat() || message.getChat().isSuperGroupChat()) {
                 long chatId = message.getChatId();
-                sendResponseWithButtons(chatId);
+                logger.info("Получено сообщение из группы или супергруппы: " + message.getChat().getTitle());
+                sendResponseWithButtons(chatId);  // Отправляем кнопки в группу
             }
-
-            // Проверка: сообщение из личного чата
             else if (message.getChat().isUserChat()) {
                 long chatId = message.getChatId();
-                sendResponseWithButtons(chatId);
+                logger.info("Получено сообщение из личного чата: " + message.getChat().getUserName());
+                sendResponseWithButtons(chatId);  // Отправляем кнопки в личку
+            }
+            // Добавляем обработку для канала
+            else if (message.getChat().isChannelChat()) {
+                long chatId = message.getChatId();
+                logger.info("Получено сообщение из канала: " + message.getChat().getTitle());
+                sendResponseWithButtons(chatId);  // Отправляем кнопки в канал
             }
         }
 
-        // Обработка нажатий кнопок
+        // Обрабатываем нажатия кнопок
         if (update.hasCallbackQuery()) {
             handleCallbackQuery(update.getCallbackQuery());
+        }
+
+        // Обрабатываем сообщения в канале
+        if (update.hasChannelPost()) {
+            Message channelPost = update.getChannelPost();
+            long chatId = channelPost.getChatId();
+            logger.info("Получено сообщение в канале: " + channelPost.getChat().getTitle());
+            sendResponseWithButtons(chatId);  // Отправляем кнопки в канал
         }
     }
 
