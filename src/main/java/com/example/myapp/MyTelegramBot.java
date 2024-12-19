@@ -5,8 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
@@ -36,47 +35,68 @@ public class MyTelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
+        if (update.hasMessage()) {
             Message message = update.getMessage();
-            sendResponseWithButtons(message.getChatId());
+
+            // Проверка: сообщение из группы или канала
+            if (message.getChat().isGroupChat() || message.getChat().isSuperGroupChat()) {
+                long chatId = message.getChatId();
+                String userMessage = message.getText();
+
+                logger.info("Сообщение из группы/канала: " + userMessage);
+
+                // Ответ на сообщение
+                sendMessage(chatId, "Спасибо за ваше сообщение! Мы обязательно ответим.");
+            }
+
+            // Проверка: сообщение из личного чата
+            else if (message.getChat().isUserChat()) {
+                long chatId = message.getChatId();
+                sendResponseWithButtons(chatId);
+            }
         }
 
+        // Обработка нажатий кнопок
         if (update.hasCallbackQuery()) {
-            String callbackData = update.getCallbackQuery().getData();
-            long chatId = update.getCallbackQuery().getMessage().getChatId();
+            handleCallbackQuery(update.getCallbackQuery());
+        }
+    }
 
-            switch (callbackData) {
-                case "about_us":
-                    sendAboutUs(chatId);
-                    break;
-                case "catalogs":
-                    sendCatalogs(chatId);
-                    break;
-                case "contacts":
-                    sendContacts(chatId);
-                    break;
-                case "catalog_dentistry":
-                    sendSubcategories(chatId, "catalog_dentistry");
-                    break;
-                case "catalog_electronics":
-                    sendSubcategories(chatId, "catalog_electronics");
-                    break;
-                case "subcategory_tools":
-                    sendPdfFile(chatId, "files/dentistry_tools.pdf");
-                    break;
-                case "subcategory_meds":
-                    sendPdfFile(chatId, "files/dentistry_meds.pdf");
-                    break;
-                case "subcategory_tv":
-                    sendPdfFile(chatId, "files/electronics_tv.pdf");
-                    break;
-                case "subcategory_audio":
-                    sendPdfFile(chatId, "files/electronics_audio.pdf");
-                    break;
-                default:
-                    logger.warn("Необработанное действие: " + callbackData);
-                    break;
-            }
+    private void handleCallbackQuery(CallbackQuery callbackQuery) {
+        String callbackData = callbackQuery.getData();
+        long chatId = callbackQuery.getMessage().getChatId();
+
+        switch (callbackData) {
+            case "about_us":
+                sendAboutUs(chatId);
+                break;
+            case "catalogs":
+                sendCatalogs(chatId);
+                break;
+            case "contacts":
+                sendContacts(chatId);
+                break;
+            case "catalog_dentistry":
+                sendSubcategories(chatId, "catalog_dentistry");
+                break;
+            case "catalog_electronics":
+                sendSubcategories(chatId, "catalog_electronics");
+                break;
+            case "subcategory_tools":
+                sendPdfFile(chatId, "files/dentistry_tools.pdf");
+                break;
+            case "subcategory_meds":
+                sendPdfFile(chatId, "files/dentistry_meds.pdf");
+                break;
+            case "subcategory_tv":
+                sendPdfFile(chatId, "files/electronics_tv.pdf");
+                break;
+            case "subcategory_audio":
+                sendPdfFile(chatId, "files/electronics_audio.pdf");
+                break;
+            default:
+                logger.warn("Необработанное действие: " + callbackData);
+                break;
         }
     }
 
